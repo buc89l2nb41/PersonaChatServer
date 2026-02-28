@@ -7,7 +7,9 @@
     "start": "bun src/server.ts",
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {},
+  "dependencies": {
+    "hono": "^4.6.0"
+  },
   "devDependencies": {
     "bun-types": "^1.3.10",
     "typescript": "^5.3.3"

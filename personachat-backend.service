@@ -1,0 +1,20 @@
+[Unit]
+Description=PersonaChat Backend Server
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/personachat-backend
+Environment="PATH=/usr/local/bin:/usr/bin:/bin:/home/www-data/.bun/bin"
+ExecStart=/home/www-data/.bun/bin/bun run start
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# 환경 변수 파일 (선택사항)
+# EnvironmentFile=/opt/personachat-backend/.env
+
+[Install]
+WantedBy=multi-user.target
