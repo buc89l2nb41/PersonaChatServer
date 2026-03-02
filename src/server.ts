@@ -4,7 +4,7 @@ import { chatCompletion } from './services/openrouter.js';
 
 const app = new Hono();
 
-const PORT = Number(Bun.env.PORT ?? 3001);
+const PORT = Number(Bun.env.PORT ?? 36000);
 const FRONTEND_URL = Bun.env.FRONTEND_URL ?? 'http://localhost:5173';
 
 // CORS 미들웨어 설정
