@@ -35,20 +35,35 @@ app.post('/api/chat/completions', async (c) => {
 
     const stream = new ReadableStream({
       async start(controller) {
+        const safeEnqueue = (data: Uint8Array) => {
+          try {
+            controller.enqueue(data);
+          } catch {
+            // 스트림이 이미 닫힌 경우(타임아웃·클라이언트 종료 등) 무시
+          }
+        };
+        const safeClose = () => {
+          try {
+            controller.close();
+          } catch {
+            // 이미 닫혀 있으면 무시
+          }
+        };
+
         try {
           await chatCompletion(messages, model, (chunk) => {
             const payload = `data: ${JSON.stringify(chunk)}\n\n`;
-            controller.enqueue(new TextEncoder().encode(payload));
+            safeEnqueue(new TextEncoder().encode(payload));
           });
 
-          controller.enqueue(new TextEncoder().encode('data: [DONE]\n\n'));
-          controller.close();
+          safeEnqueue(new TextEncoder().encode('data: [DONE]\n\n'));
+          safeClose();
         } catch (error) {
           console.error('Chat completion error:', error);
           try {
             const message =
               error instanceof Error ? error.message : '알 수 없는 오류';
-            controller.enqueue(
+            safeEnqueue(
               new TextEncoder().encode(
                 `data: ${JSON.stringify({
                   error: message,
@@ -56,7 +71,7 @@ app.post('/api/chat/completions', async (c) => {
               ),
             );
           } finally {
-            controller.close();
+            safeClose();
           }
         }
       },
